@@ -1,3 +1,5 @@
+<%@page import="com.startnext.DAO.AdminDAO"%>
+<%@page import="com.startnext.bean.AdminBean"%>
 <%@page import="com.startnext.DAO.StartupDAO"%>
 <%@page import="com.startnext.bean.StartupBean"%>
 <%@page import="java.util.ArrayList"%>
@@ -12,7 +14,12 @@
 </head>
 <body>
 	<%
-	ArrayList<StartupBean> all = StartupDAO.calal(); %>
-	<%=all.size() %>
+	AdminBean ab=new AdminBean();
+	ab.setUsername("ps115");
+	ab.setPassword("ps1215");
+	boolean b=AdminDAO.login(ab);
+	if(b){ab=AdminDAO.getuser(ab);}
+	 %>
+	 <%=b?ab.toString():"NOT AN ADMIN" %>
 </body>
 </html>

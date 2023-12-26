@@ -50,11 +50,12 @@ public class StartupDAO {
 			rs = cs.executeQuery();
 			while (rs.next()) {
 				su.getSb().setField(rs.getString("field"));
-
+				
 			}
 		} catch (Exception e) {
 
 		}
 		return su;
 	}
+//	public static boolean r
 }
