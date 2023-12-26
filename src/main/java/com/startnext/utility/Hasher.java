@@ -10,8 +10,7 @@ public class Hasher {
 	public final static String getHash(String s) throws NoSuchAlgorithmException {
 		digest = MessageDigest.getInstance("sha3-256");
 		byte[] hashbytes = digest.digest(s.getBytes(StandardCharsets.UTF_8));
-		String sha3Hex = bytesToHex(hashbytes);
-		return sha3Hex;
+		return bytesToHex(hashbytes);
 	}
 
 	private static String bytesToHex(byte[] hash) {

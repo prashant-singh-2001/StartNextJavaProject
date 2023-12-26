@@ -1,8 +1,8 @@
+<%@page import="com.startnext.bean.AdminBean"%>
+<%@page import="java.util.List"%>
+<%@page import="com.startnext.utility.DummyClass"%>
 <%@page import="com.startnext.utility.Hasher"%>
 <%@page import="com.startnext.DAO.AdminDAO"%>
-<%@page import="com.startnext.bean.AdminBean"%>
-<%@page import="com.startnext.DAO.StartupDAO"%>
-<%@page import="com.startnext.bean.StartupBean"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="com.startnext.bean.UserBean"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
@@ -16,14 +16,13 @@
 <body>
 	<%
 	AdminBean ab=new AdminBean();
-	ab.setUsername("ps1215");
-	ab.setPassword("ps1215");
+	ab.setUsername("shabnam19");
+	ab.setPassword("shab1902");
+	ab.setFname("Shabnam");
+	ab.setLname("Bhadouria");
+	ab.setEmail("shab.1998.19@gmail.com");
 	boolean b=AdminDAO.login(ab);
-	if(b){ab=AdminDAO.getuser(ab);}
-	String s=Hasher.getHash(ab.getPassword());
-	 
+	ab=AdminDAO.getuser(ab);
 	 %>
-	 <%=s.equals(Hasher.getHash(ab.getPassword())) %>
-
-</body>
+	 <%=b?Hasher.getHash(ab.getPassword())+" "+ ab.getPassword():""	 %></body>	
 </html>
