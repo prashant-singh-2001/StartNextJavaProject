@@ -24,5 +24,5 @@
 	boolean b=AdminDAO.login(ab);
 	ab=AdminDAO.getuser(ab);
 	 %>
-	 <%=b?Hasher.getHash(ab.getPassword())+" "+ ab.getPassword():""	 %></body>	
+	 <%=b?Hasher.getHash(ab.getPassword())+" "+ ab.getFname()+ab.getLname():""	 %></body>	
 </html>

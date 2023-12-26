@@ -1,5 +1,6 @@
 package com.startnext.DAO;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,35 +9,71 @@ import java.sql.Statement;
 
 import com.startnext.bean.UserBean;
 import com.startnext.utility.DBUtil;
+import com.startnext.utility.Hasher;
 
-public class UserDAO  {
-	static Connection con;
-	static Statement st;
-	static PreparedStatement pst;
-	static ResultSet rs;
-	public static UserBean signup (UserBean ub) throws ClassNotFoundException, SQLException {
-		con=DBUtil.connect();
-		int id=getMaxID()+1;
-		pst=con.prepareStatement("INSERT INTO startnext.user_details (uid,first_name,last_name,uname,pword,mail) VALUES (?,?,?,?,?,?);");
-		pst.setInt(1, id);
-		pst.setString(2, ub.getFname());
-		pst.setString(3, ub.getLname());
-		pst.setString(4, ub.getUsername());
-		pst.setString(5, ub.getPassword());
-		pst.setString(6, ub.getMail());
-		int a=pst.executeUpdate();
-		if(a>0) {
-			System.out.println("Successfull");
-			return ub;
-		}
-		return null;
-	}
-	private static int getMaxID () throws ClassNotFoundException, SQLException {
-		int maxId=0;
-		if(con==null) con=DBUtil.connect();
-		st=con.createStatement();
-		rs=st.executeQuery("SELECT max(uid) FROM USER_DETAILS");
-		while(rs.next()) {maxId=rs.getInt("uid");}
-		return maxId;
-	}
+public class UserDAO {
+    public static UserBean signup(UserBean ub) throws SQLException, NoSuchAlgorithmException, ClassNotFoundException {
+        try (Connection con = DBUtil.connect()) {
+            int id = getMaxID(con) + 1; // Pass the connection to getMaxID method
+            String hashedPassword = Hasher.getHash(ub.getPassword()); // Hash the password
+
+            try (PreparedStatement pst = con.prepareStatement("INSERT INTO startnext.user_details (uid, first_name, last_name, uname, pword, mail) VALUES (?, ?, ?, ?, ?, ?)")) {
+                pst.setInt(1, id);
+                pst.setString(2, ub.getFname());
+                pst.setString(3, ub.getLname());
+                pst.setString(4, ub.getUsername());
+                pst.setString(5, hashedPassword); // Use hashed password
+                pst.setString(6, ub.getMail());
+
+                int rowsAffected = pst.executeUpdate();
+                if (rowsAffected > 0) {
+                    System.out.println("Successful");
+                    return ub;
+                }
+            }
+        } catch (SQLException | NoSuchAlgorithmException | ClassNotFoundException e) {
+            e.printStackTrace();
+            throw e;
+        }
+        return null;
+    }
+
+    private static int getMaxID(Connection con) throws SQLException {
+        int maxId = 0;
+        try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery("SELECT max(uid) FROM USER_DETAILS")) {
+            while (rs.next()) {
+                maxId = rs.getInt("uid");
+            }
+        }
+        return maxId;
+    }
+
+    public static UserBean login(UserBean ub) throws SQLException, NoSuchAlgorithmException, ClassNotFoundException {
+        try (Connection con = DBUtil.connect()) {
+            String hashedPassword = Hasher.getHash(ub.getPassword()); // Hash the provided password
+
+            try (PreparedStatement pst = con.prepareStatement("SELECT * FROM startnext.user_details WHERE uname = ? AND pword = ?")) {
+                pst.setString(1, ub.getUsername());
+                pst.setString(2, hashedPassword);
+
+                try (ResultSet rs = pst.executeQuery()) {
+                    if (rs.next()) {
+                        UserBean loggedInUser = new UserBean();
+                        loggedInUser.setId(rs.getInt("uid"));
+                        loggedInUser.setFname(rs.getString("first_name"));
+                        loggedInUser.setLname(rs.getString("last_name"));
+                        loggedInUser.setUsername(rs.getString("uname"));
+                        loggedInUser.setMail(rs.getString("mail"));
+
+                        loggedInUser.setPassword("null");
+                        return loggedInUser;
+                    }
+                }
+            }
+        } catch (SQLException | NoSuchAlgorithmException | ClassNotFoundException e) {
+            e.printStackTrace();
+            throw e;
+        }
+        return null;
+    }
 }
