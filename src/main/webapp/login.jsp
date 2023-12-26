@@ -1,3 +1,4 @@
+<%@page import="com.startnext.utility.Hasher"%>
 <%@page import="com.startnext.DAO.AdminDAO"%>
 <%@page import="com.startnext.bean.AdminBean"%>
 <%@page import="com.startnext.DAO.StartupDAO"%>
@@ -15,11 +16,14 @@
 <body>
 	<%
 	AdminBean ab=new AdminBean();
-	ab.setUsername("ps115");
+	ab.setUsername("ps1215");
 	ab.setPassword("ps1215");
 	boolean b=AdminDAO.login(ab);
 	if(b){ab=AdminDAO.getuser(ab);}
+	String s=Hasher.getHash(ab.getPassword());
+	 
 	 %>
-	 <%=b?ab.toString():"NOT AN ADMIN" %>
+	 <%=s.equals(Hasher.getHash(ab.getPassword())) %>
+
 </body>
 </html>
