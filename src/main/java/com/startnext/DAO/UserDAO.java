@@ -16,15 +16,16 @@ public class UserDAO {
         try (Connection con = DBUtil.connect()) {
             int id = getMaxID(con) + 1; // Pass the connection to getMaxID method
             String hashedPassword = Hasher.getHash(ub.getPassword()); // Hash the password
-
-            try (PreparedStatement pst = con.prepareStatement("INSERT INTO startnext.user_details (uid, first_name, last_name, uname, pword, mail) VALUES (?, ?, ?, ?, ?, ?)")) {
+            ub.setStart_id(ub.getFname().substring(0, 3)+Math.random()*1000);
+            try (PreparedStatement pst = con.prepareStatement("INSERT INTO startnext.user_details (uid, fname, lname, uname, pword, mail,contact,statup_id) VALUES (?, ?, ?, ?, ?, ?,?,?)")) {
                 pst.setInt(1, id);
                 pst.setString(2, ub.getFname());
                 pst.setString(3, ub.getLname());
                 pst.setString(4, ub.getUsername());
                 pst.setString(5, hashedPassword); // Use hashed password
                 pst.setString(6, ub.getMail());
-
+                pst.setLong(7, ub.getContact());
+                pst.setString(8, ub.getStart_id());
                 int rowsAffected = pst.executeUpdate();
                 if (rowsAffected > 0) {
                     System.out.println("Successful");
@@ -40,7 +41,7 @@ public class UserDAO {
 
     private static int getMaxID(Connection con) throws SQLException {
         int maxId = 0;
-        try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery("SELECT max(uid) FROM USER_DETAILS")) {
+        try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery("SELECT max(uid) as uid  FROM USER_DETAILS")) {
             while (rs.next()) {
                 maxId = rs.getInt("uid");
             }
@@ -60,8 +61,8 @@ public class UserDAO {
                     if (rs.next()) {
                         UserBean loggedInUser = new UserBean();
                         loggedInUser.setId(rs.getInt("uid"));
-                        loggedInUser.setFname(rs.getString("first_name"));
-                        loggedInUser.setLname(rs.getString("last_name"));
+                        loggedInUser.setFname(rs.getString("fname"));
+                        loggedInUser.setLname(rs.getString("lname"));
                         loggedInUser.setUsername(rs.getString("uname"));
                         loggedInUser.setMail(rs.getString("mail"));
 

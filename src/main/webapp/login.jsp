@@ -1,3 +1,4 @@
+<%@page import="com.startnext.DAO.UserDAO"%>
 <%@page import="com.startnext.bean.AdminBean"%>
 <%@page import="java.util.List"%>
 <%@page import="com.startnext.utility.DummyClass"%>
@@ -15,14 +16,10 @@
 </head>
 <body>
 	<%
-	AdminBean ab=new AdminBean();
-	ab.setUsername("shabnam19");
-	ab.setPassword("shab1902");
-	ab.setFname("Shabnam");
-	ab.setLname("Bhadouria");
-	ab.setEmail("shab.1998.19@gmail.com");
-	boolean b=AdminDAO.login(ab);
-	ab=AdminDAO.getuser(ab);
-	 %>
-	 <%=b?Hasher.getHash(ab.getPassword())+" "+ ab.getFname()+ab.getLname():""	 %></body>	
+	UserBean ub = new UserBean();
+	ub.setUsername("maharani");
+	ub.setPassword("Lala@101");
+	UserBean b=UserDAO.login(ub);
+	%>
+	<%=b!=null?b.toString():"OFO" %></body>
 </html>
