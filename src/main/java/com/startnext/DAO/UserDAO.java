@@ -1,12 +1,15 @@
 package com.startnext.DAO;
 
 import java.security.NoSuchAlgorithmException;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
+import com.startnext.bean.StartupBean;
 import com.startnext.bean.UserBean;
 import com.startnext.utility.DBUtil;
 import com.startnext.utility.Hasher;
@@ -76,5 +79,20 @@ public class UserDAO {
             throw e;
         }
         return null;
+    }
+    
+    public static ArrayList<StartupBean> follow(int id) throws ClassNotFoundException, SQLException{
+    	Connection con=DBUtil.connect();
+    	CallableStatement cs;
+    	ResultSet rs;
+    	ArrayList<StartupBean> slist=new ArrayList<StartupBean>();
+    	cs=con.prepareCall("call startnext.getuser_likes(?);");
+    	cs.setInt(1, id);
+    	rs=cs.executeQuery();
+    	while(rs.next()) {
+    		
+    	}
+    	return slist;
+    	
     }
 }

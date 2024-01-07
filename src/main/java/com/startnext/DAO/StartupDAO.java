@@ -3,6 +3,8 @@ package com.startnext.DAO;
 import java.sql.*;
 import java.util.ArrayList;
 
+import org.apache.tomcat.jdbc.pool.interceptor.AbstractCreateStatementInterceptor;
+
 import com.startnext.bean.StUsBean;
 import com.startnext.bean.StartupBean;
 import com.startnext.bean.UserBean;
@@ -50,12 +52,84 @@ public class StartupDAO {
 			rs = cs.executeQuery();
 			while (rs.next()) {
 				su.getSb().setField(rs.getString("field"));
-				
+				su.getSb().setFlags(rs.getInt("flagged"));
+				su.getSb().setFounder(rs.getString("founder_id"));
+				su.getSb().setId(rs.getInt("id"));
+				su.getSb().setImage(rs.getString("st_img"));
+				su.getSb().setLikes(rs.getInt("likes"));
+				su.getSb().setName(rs.getString("name"));
+				su.getSb().setSpread(rs.getString("st_spread"));
 			}
 		} catch (Exception e) {
 
 		}
 		return su;
 	}
-//	public static boolean r
+
+	public static boolean liked(int stid, int uid) throws ClassNotFoundException, SQLException{
+		
+			Connection con = DBUtil.connect();
+		
+		PreparedStatement pst=con.prepareStatement("INSERT INTO Startup_Liked(Startup_id,user_id) VALUES (?,?);");
+		pst.setInt(1, stid);
+		pst.setInt(2,uid);
+		int i=pst.executeUpdate();
+		if(i==1) {
+			return true;
+			}
+		
+		return false;
+	}
+	
+	
+	public static boolean reported(int stid) throws ClassNotFoundException, SQLException {
+		
+			Connection con = DBUtil.connect();
+		PreparedStatement pst=con.prepareStatement("INSERT INTO flag_details(Startup_id,flagged) VALUES (?,?);");
+		pst.setInt(1, stid);
+		pst.setInt(2, StartupDao.maxreport(stid));
+		int i=pst.executeUpdate();
+		if(i==1) {
+			return true;
+			}
+		
+		return false;
+	}
+	
+	public static boolean userliked(int stid, int uid) throws ClassNotFoundException, SQLException {
+	
+			Connection con = DBUtil.connect();
+		
+		PreparedStatement pst=con.prepareStatement("select * feom startup_liked where startup_id=? and user_id=?");
+		pst.setInt(1, stid);
+		pst.setInt(2, uid);
+		rs=pst.executeQuery();
+		int i=0;
+		while(rs.next()) {
+			i++;
+			}
+		if(i==1) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	
+	public static int maxreport(int stid, int uid) throws ClassNotFoundException, SQLException {
+		
+		int maxid=0;
+		Connection con = DBUtil.connect();
+	
+	Statement st=con.createStatement();
+	rs=st.executeQuery("select * from flag_details");
+	int i=0;
+	while(rs.next()) {
+		maxid=rs.getInt("flagged");
+		}
+	
+	return maxid;
+	}
+
+	
 }
