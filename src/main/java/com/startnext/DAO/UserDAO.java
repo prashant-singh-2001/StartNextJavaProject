@@ -90,7 +90,15 @@ public class UserDAO {
     	cs.setInt(1, id);
     	rs=cs.executeQuery();
     	while(rs.next()) {
-    		
+    		StartupBean sb=new StartupBean();
+    		sb.setField(rs.getString("field"));
+    		sb.setFounder(rs.getString("founder_id"));
+    		sb.setId(rs.getInt("id"));
+    		sb.setImage(rs.getString("st_img"));
+    		sb.setName(rs.getString("name"));
+    		sb.setScope(rs.getString("scope"));
+    		sb.setStart_date(null);
+    		slist.add(sb);
     	}
     	return slist;
     	
